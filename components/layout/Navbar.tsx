@@ -11,7 +11,6 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, setUser } = useUser();
   const router = require("next/navigation").useRouter();
-  console.log(user);
 
   const navigation = [
     { name: "Home", href: "/" },

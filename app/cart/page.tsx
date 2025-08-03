@@ -7,16 +7,18 @@ import { Minus, Plus, X, ShoppingBag, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/contexts/CartContext";
 import { useUser } from "@/contexts/UserContext";
-
+import { set } from "date-fns";
+import { useMyCart } from "./useMyCart";
+import { useRemoveFromCart } from "./useRemoveFromCart";
+import { useUpdateQuantity } from "./useUpdateQuantity";
 export default function CartPage() {
   const { state, dispatch } = useCart();
   const { user } = useUser();
   const router = require("next/navigation").useRouter();
-  console.log("user", user);
 
-  const updateQuantity = (id: string, quantity: number) => {
-    dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
-  };
+  const { data: cart, isLoading: loadingCart, error: errorCart } = useMyCart();
+  const { mutate: removeProduct, isPending } = useRemoveFromCart();
+  const { mutate: mutateLupdateQuantity } = useUpdateQuantity();
 
   const removeItem = (id: string) => {
     dispatch({ type: "REMOVE_FROM_CART", payload: id });
@@ -26,6 +28,24 @@ export default function CartPage() {
   const tax = subtotal * 0.08; // 8% tax
   const shipping = subtotal > 50 ? 0 : 5.99;
   const total = subtotal + tax + shipping;
+
+  console.log("cart", cart);
+  if (loadingCart) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <ShoppingBag className="h-16 w-16 text-gray-400 mx-auto mb-4 animate-pulse" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            جاري التحميل...
+          </h1>
+          <p className="text-gray-600 mb-6">
+            يرجى الانتظار حتى يتم تحميل البيانات.
+          </p>
+        </div>
+      </div>
+    );
+  }
+  if (errorCart) return <p>حدث خطأ اثناء عرض البيانات</p>;
 
   if (!user) {
     return (
@@ -49,20 +69,20 @@ export default function CartPage() {
     );
   }
 
-  if (state.items.length === 0) {
+  if (!cart?.products.length) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-4">
           <ShoppingBag className="h-16 w-16 text-gray-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Your cart is empty
+            سلة التسوق فارغة
           </h1>
           <p className="text-gray-600 mb-6">
-            Discover our amazing products and start adding items to your cart.
+            اكتشف منتجاتنا الرائعة وابدأ بإضافة العناصر إلى سلتك.
           </p>
           <Button asChild>
             <Link href="/products">
-              Start Shopping <ArrowRight className="ml-2 h-4 w-4" />
+              ابدأ التسوق <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
         </div>
@@ -74,28 +94,25 @@ export default function CartPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-          Shopping Cart ({state.itemCount}{" "}
-          {state.itemCount === 1 ? "item" : "items"})
+          سلة التسوق ({cart.products.length} عنصر)
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
+          {/* عناصر السلة */}
           <div className="lg:col-span-2 space-y-4">
-            {state.items.map((item) => {
-              const discountedPrice = item.discount
-                ? item.price * (1 - item.discount / 100)
-                : item.price;
-
+            {cart.products.map((item) => {
+              const product = item.product;
+              const discountedPrice = product.finalPrice;
               return (
                 <div
-                  key={item.id}
+                  key={item._id}
                   className="bg-white rounded-2xl p-6 shadow-md"
                 >
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="w-full sm:w-24 h-24 relative rounded-lg overflow-hidden bg-gray-100">
                       <Image
-                        src={item.image}
-                        alt={item.name}
+                        src={product.images[0]}
+                        alt={product.name}
                         fill
                         className="object-cover"
                       />
@@ -105,12 +122,16 @@ export default function CartPage() {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="font-semibold text-gray-900">
-                            {item.name}
+                            {product.name}
                           </h3>
-                          <p className="text-sm text-gray-600">{item.brand}</p>
+                          <p className="text-sm text-gray-600">
+                            id : {product._id}
+                          </p>
                         </div>
                         <button
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => {
+                            removeProduct(item.product._id);
+                          }}
                           className="text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <X className="h-5 w-5" />
@@ -120,10 +141,13 @@ export default function CartPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <button
-                            onClick={() =>
-                              updateQuantity(item.id, item.quantity - 1)
-                            }
                             disabled={item.quantity <= 1}
+                            onClick={() =>
+                              mutateLupdateQuantity({
+                                productId: item.product._id,
+                                quantity: item.quantity - 1,
+                              })
+                            }
                             className="p-1 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
                             <Minus className="h-4 w-4" />
@@ -133,7 +157,10 @@ export default function CartPage() {
                           </span>
                           <button
                             onClick={() =>
-                              updateQuantity(item.id, item.quantity + 1)
+                              mutateLupdateQuantity({
+                                productId: item.product._id,
+                                quantity: item.quantity + 1,
+                              })
                             }
                             className="p-1 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors"
                           >
@@ -142,13 +169,15 @@ export default function CartPage() {
                         </div>
 
                         <div className="text-right">
-                          {item.discount && (
-                            <div className="text-sm text-gray-500 line-through">
-                              ${(item.price * item.quantity).toFixed(2)}
-                            </div>
-                          )}
+                          <div className="text-sm text-gray-500 line-through">
+                            {product.priceBeforeDiscount !==
+                              product.finalPrice &&
+                              `جنيه ${(
+                                product.priceBeforeDiscount * item.quantity
+                              ).toFixed(2)}`}
+                          </div>
                           <div className="font-semibold text-rose-600">
-                            ${(discountedPrice * item.quantity).toFixed(2)}
+                            جنيه {(discountedPrice * item.quantity).toFixed(2)}
                           </div>
                         </div>
                       </div>
@@ -160,45 +189,43 @@ export default function CartPage() {
 
             <div className="flex justify-between items-center pt-4">
               <Button variant="outline" asChild>
-                <Link href="/products">Continue Shopping</Link>
+                <Link href="/products">متابعة التسوق</Link>
               </Button>
 
-              <button
+              {/* <button
                 onClick={() => dispatch({ type: "CLEAR_CART" })}
                 className="text-gray-600 hover:text-red-500 transition-colors"
               >
-                Clear Cart
-              </button>
+                حذف كل السلة
+              </button> */}
             </div>
           </div>
 
-          {/* Order Summary */}
+          {/* ملخص الطلب */}
           <div className="bg-white rounded-2xl p-6 shadow-md h-fit sticky top-24">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              Order Summary
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">ملخص الطلب</h2>
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${subtotal.toFixed(2)}</span>
+                <span className="text-gray-600">المجموع الفرعي</span>
+                <span className="font-medium">جنيه {subtotal.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-gray-600">Tax</span>
-                <span className="font-medium">${tax.toFixed(2)}</span>
+                <span className="text-gray-600">الضريبة</span>
+                <span className="font-medium">جنيه {tax.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-gray-600">Shipping</span>
+                <span className="text-gray-600">الشحن</span>
                 <span className="font-medium">
-                  {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                  {shipping === 0 ? "مجاني" : `جنيه ${shipping.toFixed(2)}`}
                 </span>
               </div>
 
               {shipping > 0 && (
                 <p className="text-xs text-gray-500">
-                  Free shipping on orders over $50
+                  شحن مجاني للطلبات التي تزيد عن 50 جنيه
                 </p>
               )}
             </div>
@@ -206,21 +233,21 @@ export default function CartPage() {
             <div className="border-t border-gray-200 my-4"></div>
 
             <div className="flex justify-between items-center mb-6">
-              <span className="text-lg font-bold text-gray-900">Total</span>
+              <span className="text-lg font-bold text-gray-900">الإجمالي</span>
               <span className="text-xl font-bold text-rose-600">
-                ${total.toFixed(2)}
+                جنيه {total.toFixed(2)}
               </span>
             </div>
 
             <Button size="lg" className="w-full" asChild>
               <Link href="/checkout">
-                Proceed to Checkout <ArrowRight className="ml-2 h-4 w-4" />
+                إتمام الشراء <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
 
             <div className="mt-4 text-center">
               <p className="text-xs text-gray-500">
-                Secure checkout with 256-bit SSL encryption
+                عملية دفع آمنة بتشفير SSL 256 بت
               </p>
             </div>
           </div>
