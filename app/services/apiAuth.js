@@ -8,7 +8,11 @@ export const login = async (data) => {
   } catch (error) {
     console.log(error);
     if (error.response && error.response.data) {
-      throw new Error(error.response.data.message || "Login failed");
+      throw new Error(
+        error.response.data?.message ||
+          error.response.data?.error?.message ||
+          "Login failed"
+      );
     }
     throw new Error(error.message || "Login failed");
   }
@@ -22,7 +26,9 @@ export const register = async (data) => {
   } catch (error) {
     console.log(error);
     if (error.response && error.response.data) {
-      throw new Error(error.response.data.message || "Registration failed");
+      throw new Error(
+        error.response.data.error.message || "Registration failed"
+      );
     }
     throw new Error(error.message || "Registration failed");
   }

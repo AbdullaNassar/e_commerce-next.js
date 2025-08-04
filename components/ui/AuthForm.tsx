@@ -137,12 +137,10 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
                     type="checkbox"
                     className="text-rose-600 focus:ring-rose-500 border-gray-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-600">
-                    تذكرني
-                  </span>
+                  <span className="ml-2 text-sm text-gray-600">تذكرني</span>
                 </label>
                 <Link
-                  href="/forgot-password"
+                  href="/forgetPass"
                   className="text-sm text-rose-600 hover:text-rose-700"
                 >
                   نسيت كلمة المرور؟
@@ -166,9 +164,7 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
 
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              {type === "login"
-                ? "ليس لديك حساب؟"
-                : "لديك حساب بالفعل؟"}
+              {type === "login" ? "ليس لديك حساب؟" : "لديك حساب بالفعل؟"}
               <Link
                 href={type === "login" ? "/register" : "/login"}
                 className="ml-1 font-medium text-rose-600 hover:text-rose-700"

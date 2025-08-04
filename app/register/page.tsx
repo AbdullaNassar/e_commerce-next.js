@@ -15,9 +15,11 @@ export default function RegisterPage() {
     setError(null);
     try {
       await register(formData);
-      toast.success("تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.");
+      toast.success(
+        "تم التسجيل بنجاح! تحقق من بريدك الإلكتروني لتفعيل الحساب."
+      );
       setTimeout(() => {
-        router.push("/login");
+        router.push("/check-email");
       }, 1500);
     } catch (err: any) {
       setError(err);
