@@ -5,13 +5,22 @@ import Link from "next/link";
 import { Search, ShoppingBag, User, Menu, X, Heart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useUser } from "@/contexts/UserContext";
+import { useMyCart } from "@/app/cart/useMyCart";
+import { useCurUser } from "@/app/login/useCurUser";
+import { useLogout } from "@/app/login/useLogout";
 
 export function Navbar() {
-  const { state } = useCart();
+  const { user: user, isLoading: loadingUser, error: errorUser } = useCurUser();
+  const { logout } = useLogout();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, setUser } = useUser();
   const router = require("next/navigation").useRouter();
+  const { data: cart, isLoading: loadingCart, error: errorCart } = useMyCart();
+  if (loadingCart) return <h2>Loading...</h2>;
+  if (errorCart) return <h2>error while loading cart...</h2>;
+  if (loadingUser) return <p>Loading...</p>;
+  if (errorUser) return <p>Error: {errorUser.message}</p>;
 
+  console.log("uuuuu", user);
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Products", href: "/products" },
@@ -20,6 +29,7 @@ export function Navbar() {
     { name: "Contact", href: "/contact" },
   ];
 
+  console.log("my cart ", cart);
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-rose-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,11 +77,7 @@ export function Navbar() {
                 </span>
                 <button
                   className="ml-2 text-gray-700 hover:text-white bg-rose-500 hover:bg-rose-700 transition-colors font-medium px-3 py-2 rounded"
-                  onClick={() => {
-                    localStorage.removeItem("token");
-                    setUser(null);
-                    router.push("/login");
-                  }}
+                  onClick={logout}
                 >
                   تسجيل الخروج
                 </button>
@@ -90,9 +96,9 @@ export function Navbar() {
               className="relative text-gray-700 hover:text-rose-600 transition-colors"
             >
               <ShoppingBag className="h-5 w-5" />
-              {state.itemCount > 0 && (
+              {cart?.products?.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-rose-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {state.itemCount}
+                  {cart?.products?.length}
                 </span>
               )}
             </Link>

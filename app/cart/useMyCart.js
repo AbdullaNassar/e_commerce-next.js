@@ -1,15 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "../services/axiosInstance";
-
-const fetchMyCart = async () => {
-  const response = await api.get("/carts");
-  return response.data.myCart;
-};
+import { getMyCart } from "../services/apiCart";
 
 export function useMyCart() {
   return useQuery({
     queryKey: ["myCart"],
-    queryFn: fetchMyCart,
+    queryFn: getMyCart,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });

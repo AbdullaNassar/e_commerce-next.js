@@ -24,11 +24,6 @@ export default function CartPage() {
     dispatch({ type: "REMOVE_FROM_CART", payload: id });
   };
 
-  const subtotal = state.total;
-  const tax = subtotal * 0.08; // 8% tax
-  const shipping = subtotal > 50 ? 0 : 5.99;
-  const total = subtotal + tax + shipping;
-
   console.log("cart", cart);
   if (loadingCart) {
     return (
@@ -89,7 +84,11 @@ export default function CartPage() {
       </div>
     );
   }
-
+  const subtotal = cart.totalPrice;
+  // const tax = subtotal * 0.08; // 8% tax
+  const shipping = subtotal > 50 ? 0 : 5.99;
+  const total = subtotal + shipping;
+  console.log(cart);
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -210,11 +209,11 @@ export default function CartPage() {
                 <span className="text-gray-600">المجموع الفرعي</span>
                 <span className="font-medium">جنيه {subtotal.toFixed(2)}</span>
               </div>
-
+              {/* 
               <div className="flex justify-between">
                 <span className="text-gray-600">الضريبة</span>
                 <span className="font-medium">جنيه {tax.toFixed(2)}</span>
-              </div>
+              </div> */}
 
               <div className="flex justify-between">
                 <span className="text-gray-600">الشحن</span>

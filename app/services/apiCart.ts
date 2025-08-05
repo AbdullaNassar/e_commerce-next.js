@@ -2,9 +2,19 @@ import api from "./axiosInstance";
 export const getMyCart = async () => {
   try {
     const response = await api.get("/carts");
-    return response.data.myCart;
+    return response.data?.myCart || null;
   } catch (error) {
     console.error("Error in getMyCart:", error);
+    const message =
+      error?.response?.data?.message || error?.response?.data?.error?.message;
+
+    // If auth-related issue, return null instead of throwing
+    if (
+      error?.response?.status === 401 ||
+      message === "Authentication required"
+    ) {
+      return null;
+    }
     throw error;
   }
 };
