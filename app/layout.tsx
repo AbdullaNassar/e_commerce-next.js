@@ -29,7 +29,7 @@ export default function RootLayout({
 }) {
   const [queryClient] = useState(() => new QueryClient()); // ✅ FIX HERE
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl">
       <body className={`${poppins.variable} font-poppins`}>
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools
