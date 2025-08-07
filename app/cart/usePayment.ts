@@ -10,7 +10,7 @@ export const usePaymentOrder = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["myCart"] });
       console.log("✅ Payment successful:", data);
-      toast.success("تم الدفع بنجاح"); // Optional toast
+      toast.success("تم حجز الطب بنجاح "); // Optional toast
     },
 
     onError: (error: any) => {

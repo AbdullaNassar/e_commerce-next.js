@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Heart, Star, ShoppingBag } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
-import { Button } from './button';
-import { Product } from '@/lib/types';
-import { useUser } from '@/contexts/UserContext';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Heart, Star, ShoppingBag } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { Button } from "./button";
+import { Product } from "@/lib/types";
+import { useUser } from "@/contexts/UserContext";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useAddToCart } from "@/app/cart/useAddToCart";
 interface ProductCardProps {
   product: any;
 }
@@ -18,26 +18,26 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { dispatch } = useCart();
 
+  const { mutate: addToCart, isPending } = useAddToCart();
 
-  const { user } = useUser()
-  const router = useRouter()
+  const { user } = useUser();
+  const router = useRouter();
 
   const handleAddToCart = () => {
     if (!user) {
-      toast.error('يجب تسجيل الدخول أولاً', {
-        description: 'الرجاء تسجيل الدخول لإضافة المنتجات إلى السلة',
+      toast.error("يجب تسجيل الدخول أولاً", {
+        description: "الرجاء تسجيل الدخول لإضافة المنتجات إلى السلة",
         action: {
-          label: 'تسجيل الدخول',
-          onClick: () => router.push('/login')
-        }
+          label: "تسجيل الدخول",
+          onClick: () => router.push("/login"),
+        },
       });
       return;
     }
+
+    addToCart({ productId: product._id, quantity: 1 });
     // TODO: Add to cart logic here
-    //  dispatch({ type: 'ADD_TO_CART', payload: product });
-
   };
-
 
   return (
     <div className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
@@ -71,7 +71,6 @@ export function ProductCard({ product }: ProductCardProps) {
           </h3>
         </Link>
 
-
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {product.finalPrice && (
@@ -81,11 +80,11 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
             <span className="text-lg font-bold text-rose-600">
               {product.finalPrice}
-
             </span>
           </div>
 
           <Button
+            disabled={isPending}
             size="sm"
             onClick={handleAddToCart}
             className="px-3 py-2"

@@ -61,3 +61,23 @@ export const PaymentOrder = async ({ phone, address, name }) => {
     throw new Error(message || "حدث خطأ أثناء معالجة الدفع");
   }
 };
+
+// api/cartApi.js
+
+export const addToCart = async ({ productId, quantity = 1 }) => {
+  try {
+    const response = await api.post("/carts", { productId, quantity });
+    return response.data;
+  } catch (error) {
+    // Optional: log the error for debugging
+    console.error("Add to cart error:", error);
+
+    // Normalize and re-throw a useful error object
+    const message =
+      error?.response?.data?.error?.message ||
+      error?.message ||
+      "Failed to add product to cart";
+
+    throw new Error(message);
+  }
+};

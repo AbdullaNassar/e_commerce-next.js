@@ -1,28 +1,26 @@
-'use client';
+"use client";
 
-
-import React, { useState, useMemo } from 'react';
-import { Filter, X } from 'lucide-react';
-import { ProductCard } from '@/components/ui/ProductCard';
-import { Button } from '@/components/ui/button';
-import FilterSidebar from './FilterSidebar';
-import { useQuery } from '@tanstack/react-query';
-import { getAllProducts } from '../services/api-products';
-import { getAllCategories } from '../services/api-categories';
-import { Product } from '@/lib/types';
-
+import React, { useState, useMemo } from "react";
+import { Filter, X } from "lucide-react";
+import { ProductCard } from "@/components/ui/ProductCard";
+import { Button } from "@/components/ui/button";
+import FilterSidebar from "./FilterSidebar";
+import { useQuery } from "@tanstack/react-query";
+import { getAllProducts } from "../services/api-products";
+import { getAllCategories } from "../services/api-categories";
+import { Product } from "@/lib/types";
 
 export default function ProductsPage() {
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedCategoryId, setSelectedCategoryId] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
 
   const {
     data: categories = [],
     isLoading: categoriesLoading,
     isError: categoriesError,
   } = useQuery<{ _id: string; name: string }[]>({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: async () => {
       const res = await getAllCategories();
       return res.data.categories || [];
@@ -34,16 +32,15 @@ export default function ProductsPage() {
     isLoading: productsLoading,
     isError: productsError,
   } = useQuery<Product[]>({
-    queryKey: ['products', selectedCategoryId],
+    queryKey: ["products", selectedCategoryId],
     queryFn: async () => {
       const res = await getAllProducts(selectedCategoryId);
       if (selectedCategoryId) {
-        return res.data.products || []
+        return res.data.products || [];
       }
       return res.data.data.products || [];
     },
   });
-
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
@@ -66,16 +63,20 @@ export default function ProductsPage() {
             className="w-full justify-center"
           >
             <Filter className="h-4 w-4 ml-2" />
-            {showFilters ? 'إخفاء المرشحات' : 'إظهار المرشحات'}
+            {showFilters ? "إخفاء المرشحات" : "إظهار المرشحات"}
           </Button>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
-          <div className={`lg:w-64 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          <div
+            className={`lg:w-64 ${showFilters ? "block" : "hidden lg:block"}`}
+          >
             <div className="bg-white p-6 rounded-2xl shadow-md sticky top-24">
               <div className="flex items-center justify-between mb-4 lg:mb-0">
-                <h2 className="text-xl font-semibold text-gray-900 lg:hidden">المرشحات</h2>
+                <h2 className="text-xl font-semibold text-gray-900 lg:hidden">
+                  المرشحات
+                </h2>
                 <button
                   onClick={() => setShowFilters(false)}
                   className="lg:hidden text-gray-500 hover:text-gray-700"
@@ -104,9 +105,13 @@ export default function ProductsPage() {
 
             {/* Products Grid */}
             {productsLoading || categoriesLoading ? (
-              <div className="text-center py-12 text-gray-500">جاري التحميل...</div>
+              <div className="text-center py-12 text-gray-500">
+                جاري التحميل...
+              </div>
             ) : productsError || categoriesError ? (
-              <div className="text-center py-12 text-red-500">حدث خطأ أثناء جلب البيانات</div>
+              <div className="text-center py-12 text-red-500">
+                حدث خطأ أثناء جلب البيانات
+              </div>
             ) : products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product: Product) => (
@@ -122,7 +127,7 @@ export default function ProductsPage() {
                 </div>
                 <Button
                   variant="outline"
-                  onClick={() => setSelectedCategory('الكل')}
+                  onClick={() => setSelectedCategory("الكل")}
                 >
                   مسح جميع المرشحات
                 </Button>
