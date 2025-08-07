@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface ProductCardProps {
-  product: Product;
+  product: any;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
