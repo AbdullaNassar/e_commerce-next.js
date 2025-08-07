@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Star, Sparkles, Heart, Gift, Truck } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { products, testimonials } from '@/lib/data';
 
@@ -12,7 +12,7 @@ export default function Home() {
   const featuredProducts = products.slice(0, 4);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" dir="rtl">
       {/* Hero Section */}
       <section className="relative bg-rose-gradient min-h-[600px] flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-rose-50/90 to-transparent"></div>
@@ -21,35 +21,35 @@ export default function Home() {
             <div className="space-y-8 animate-fade-in">
               <div className="space-y-4">
                 <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
-                  Discover Your
-                  <span className="text-rose-600 block">Natural Beauty</span>
+                  اكتشفي
+                  <span className="text-rose-600 block">جمالك الطبيعي</span>
                 </h1>
                 <p className="text-lg text-gray-700 max-w-lg">
-                  Premium cosmetics and skincare products crafted with the finest ingredients to enhance your natural radiance.
+                  مستحضرات تجميل وعناية بالبشرة فاخرة مصنوعة بأجود المكونات لتعزيز إشراقتك الطبيعية.
                 </p>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" asChild>
+                <Button size="lg" >
                   <Link href="/products">
-                    Shop Now <ArrowRight className="ml-2 h-5 w-5" />
+                    تسوقي الآن <ArrowRight className="mr-2 h-5 w-5 rotate-180" />
                   </Link>
                 </Button>
-                <Button variant="secondary" size="lg" asChild>
+                <Button variant="secondary" size="lg" >
                   <Link href="/offers">
-                    View Offers
+                    عرض العروض
                   </Link>
                 </Button>
               </div>
 
               <div className="flex items-center space-x-8 pt-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">10K+</div>
-                  <div className="text-sm text-gray-600">Happy Customers</div>
+                  <div className="text-2xl font-bold text-gray-900">+10 آلاف</div>
+                  <div className="text-sm text-gray-600">عميلة سعيدة</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">500+</div>
-                  <div className="text-sm text-gray-600">Premium Products</div>
+                  <div className="text-2xl font-bold text-gray-900">+500</div>
+                  <div className="text-sm text-gray-600">منتج فاخر</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gray-900">4.9</div>
@@ -66,19 +66,19 @@ export default function Home() {
               <div className="relative h-[500px] w-full">
                 <Image
                   src="https://images.pexels.com/photos/3373736/pexels-photo-3373736.jpeg?auto=compress&cs=tinysrgb&w=800"
-                  alt="Beautiful woman with cosmetics"
+                  alt="امرأة جميلة مع مستحضرات التجميل"
                   fill
                   className="object-cover rounded-2xl shadow-2xl"
                 />
               </div>
-              <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-lg">
-                <div className="flex items-center space-x-3">
+              <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg">
+                <div className="flex items-center space-x-3 space-x-reverse">
                   <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center">
                     <Sparkles className="h-6 w-6 text-rose-600" />
                   </div>
                   <div>
-                    <div className="font-semibold text-gray-900">Free Samples</div>
-                    <div className="text-sm text-gray-600">With every order</div>
+                    <div className="font-semibold text-gray-900">عينات مجانية</div>
+                    <div className="text-sm text-gray-600">مع كل طلب</div>
                   </div>
                 </div>
               </div>
@@ -95,24 +95,24 @@ export default function Home() {
               <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Truck className="h-8 w-8 text-rose-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Free Shipping</h3>
-              <p className="text-gray-600">Free shipping on orders over $50</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">شحن مجاني</h3>
+              <p className="text-gray-600">شحن مجاني للطلبات أكثر من 50 دولار</p>
             </div>
-            
+
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Gift className="h-8 w-8 text-rose-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Free Samples</h3>
-              <p className="text-gray-600">Complimentary samples with every purchase</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">عينات مجانية</h3>
+              <p className="text-gray-600">عينات مجانية مع كل عملية شراء</p>
             </div>
-            
+
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="h-8 w-8 text-rose-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Cruelty-Free</h3>
-              <p className="text-gray-600">All products are ethically made</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">غير مختبرة على الحيوانات</h3>
+              <p className="text-gray-600">جميع المنتجات مصنوعة بطريقة أخلاقية</p>
             </div>
           </div>
         </div>
@@ -123,10 +123,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Featured Products
+              المنتجات المميزة
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our most loved products, carefully selected for their exceptional quality and results.
+              اكتشفي منتجاتنا الأكثر حباً، المختارة بعناية لجودتها الاستثنائية ونتائجها المذهلة.
             </p>
           </div>
 
@@ -137,9 +137,9 @@ export default function Home() {
           </div>
 
           <div className="text-center">
-            <Button asChild>
+            <Button>
               <Link href="/products">
-                View All Products <ArrowRight className="ml-2 h-4 w-4" />
+                عرض جميع المنتجات <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
               </Link>
             </Button>
           </div>
@@ -151,10 +151,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              What Our Customers Say
+              ماذا تقول عميلاتنا
             </h2>
             <p className="text-lg text-gray-600">
-              Join thousands of satisfied customers who trust Bella Cosmetics
+              انضمي إلى آلاف العميلات الراضيات اللواتي يثقن في مستحضرات بيلا
             </p>
           </div>
 
@@ -173,7 +173,7 @@ export default function Home() {
                     alt={testimonial.name}
                     width={40}
                     height={40}
-                    className="rounded-full mr-3"
+                    className="rounded-full ml-3"
                   />
                   <div>
                     <div className="font-semibold text-gray-900">{testimonial.name}</div>
@@ -190,23 +190,23 @@ export default function Home() {
       <section className="py-16 bg-rose-gradient">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Stay in the Loop
+            ابقي على اطلاع
           </h2>
           <p className="text-lg text-gray-700 mb-8">
-            Subscribe to our newsletter for exclusive offers, beauty tips, and product launches.
+            اشتركي في نشرتنا الإخبارية للحصول على عروض حصرية ونصائح جمالية وإطلاق المنتجات الجديدة.
           </p>
-          
+
           <div className="max-w-md mx-auto">
             <div className="flex flex-col sm:flex-row gap-4">
               <input
                 type="email"
-                placeholder="Enter your email address"
-                className="flex-1 px-4 py-3 border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                placeholder="أدخلي عنوان بريدك الإلكتروني"
+                className="flex-1 px-4 py-3 border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent text-right"
               />
-              <Button>Subscribe</Button>
+              <Button>اشتراك</Button>
             </div>
             <p className="text-sm text-gray-600 mt-4">
-              No spam, unsubscribe at any time.
+              لا رسائل مزعجة، يمكنك إلغاء الاشتراك في أي وقت.
             </p>
           </div>
         </div>

@@ -15,18 +15,18 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = require("next/navigation").useRouter();
   const { data: cart, isLoading: loadingCart, error: errorCart } = useMyCart();
-  if (loadingCart) return <h2>Loading...</h2>;
-  if (errorCart) return <h2>error while loading cart...</h2>;
-  if (loadingUser) return <p>Loading...</p>;
-  if (errorUser) return <p>Error: {errorUser.message}</p>;
+  // if (loadingCart) return <h2>Loading...</h2>;
+  // if (errorCart) return <h2>error while loading cart...</h2>;
+  // if (loadingUser) return <p>Loading...</p>;
+  // if (errorUser) return <p>Error: {errorUser.message}</p>;
 
   console.log("uuuuu", user);
   const navigation = [
-    { name: "Home", href: "/" },
-    { name: "Products", href: "/products" },
-    { name: "Offers", href: "/offers" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
+    { name: 'الرئيسية', href: '/' },
+    { name: 'المنتجات', href: '/products' },
+    // { name: 'العروض', href: '/offers' },
+    // { name: 'من نحن', href: '/about' },
+    // { name: 'اتصل بنا', href: '/contact' },
   ];
 
   console.log("my cart ", cart);
@@ -35,15 +35,15 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-rose-gradient rounded-lg flex items-center justify-center">
               <Heart className="h-5 w-5 text-rose-600 fill-current" />
             </div>
-            <span className="text-xl font-bold text-gray-900">Bella</span>
+            <span className="text-xl font-bold text-gray-900">بيلا</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center gap-2">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -58,11 +58,11 @@ export function Navbar() {
           {/* Search Bar - Desktop */}
           <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search for products..."
-                className="w-full pl-10 pr-4 py-2 border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                placeholder="البحث عن المنتجات..."
+                className="w-full pr-10 pl-4 py-2 border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent text-right"
               />
             </div>
           </div>
@@ -128,7 +128,7 @@ export function Navbar() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search products..."
+                  placeholder="البحث عن المنتجات..."
                   className="w-full pl-10 pr-4 py-2 border border-rose-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
