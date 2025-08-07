@@ -4,10 +4,12 @@ import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Heart, Star, ShoppingBag, Minus, Plus, Truck, Shield, RotateCcw } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/ui/ProductCard';
-import { products } from '@/lib/data';
 import { useCart } from '@/contexts/CartContext';
+import { Product } from '@/lib/types';
+import { useQuery } from '@tanstack/react-query';
+import { getProductById } from '@/app/services/api-products';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -16,34 +18,49 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
-  const product = products.find(p => p.id === params.id);
-  
-  if (!product) {
+  // Fetch product data
+  const { data: product, isLoading, isError } = useQuery<Product>({
+    queryKey: ['product', params.id],
+    queryFn: async () => {
+      const res = await getProductById(params.id as string);
+      return res.data.product[0];
+    },
+  });
+
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product not found</h1>
-          <Button onClick={() => router.back()}>Go Back</Button>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">جاري التحميل...</h1>
         </div>
       </div>
     );
   }
 
-  const relatedProducts = products
-    .filter(p => p.id !== product.id && p.category === product.category)
-    .slice(0, 4);
+  if (isError || !product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">المنتج غير موجود</h1>
+          <Button onClick={() => router.back()}>العودة</Button>
+        </div>
+      </div>
+    );
+  }
 
-  const discountedPrice = product.discount 
-    ? product.price * (1 - product.discount / 100)
-    : product.price;
+  const finalPrice = product.finalPrice;
+  const priceBeforeDiscount = product.priceBeforeDiscount;
+  const discount = priceBeforeDiscount > finalPrice
+    ? Math.round((1 - finalPrice / priceBeforeDiscount) * 100)
+    : 0;
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      dispatch({ type: 'ADD_TO_CART', payload: product });
-    }
+    // for (let i = 0; i < quantity; i++) {
+    //   dispatch({ type: 'ADD_TO_CART', payload: product });
+    // }
   };
 
-  const productImages = product.images || [product.image];
+  const productImages = product.images;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,7 +71,7 @@ export default function ProductDetailPage() {
           className="flex items-center text-gray-600 hover:text-rose-600 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Products
+          العودة إلى المنتجات
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
@@ -67,22 +84,21 @@ export default function ProductDetailPage() {
                 fill
                 className="object-cover"
               />
-              {product.discount && (
+              {discount > 0 && (
                 <div className="absolute top-4 left-4 bg-rose-500 text-white px-3 py-1 rounded-lg font-medium">
-                  -{product.discount}% OFF
+                  -{discount}% OFF
                 </div>
               )}
             </div>
-            
+
             {productImages.length > 1 && (
               <div className="flex space-x-2">
                 {productImages.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      selectedImage === index ? 'border-rose-500' : 'border-gray-200'
-                    }`}
+                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${selectedImage === index ? 'border-rose-500' : 'border-gray-200'
+                      }`}
                   >
                     <Image
                       src={image}
@@ -100,58 +116,31 @@ export default function ProductDetailPage() {
           {/* Product Info */}
           <div className="space-y-6">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-gray-600">({product.rating})</span>
-              </div>
-              
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-              <p className="text-lg text-gray-600 mb-4">{product.brand}</p>
-              
-              <div className="flex items-center gap-4">
-                {product.discount && (
+
+              <div className="flex items-center gap-4 mt-4">
+                {discount > 0 && (
                   <span className="text-xl text-gray-500 line-through">
-                    ${product.price.toFixed(2)}
+                    ${priceBeforeDiscount.toFixed(2)}
                   </span>
                 )}
                 <span className="text-3xl font-bold text-rose-600">
-                  ${discountedPrice.toFixed(2)}
+                  ${finalPrice.toFixed(2)}
                 </span>
               </div>
             </div>
 
             <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-              <p className="text-gray-700 leading-relaxed">{product.description}</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">الوصف</h3>
+              {/* <p className="text-gray-700 leading-relaxed">{product.description}</p> */}
             </div>
 
-            {product.ingredients && (
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Key Ingredients</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.ingredients.map((ingredient, index) => (
-                    <span
-                      key={index}
-                      className="bg-rose-100 text-rose-800 px-3 py-1 rounded-full text-sm"
-                    >
-                      {ingredient}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+
 
             {/* Quantity and Add to Cart */}
             <div className="border-t border-gray-200 pt-6 space-y-4">
               <div className="flex items-center space-x-4">
-                <span className="text-gray-700 font-medium">Quantity:</span>
+                <span className="text-gray-700 font-medium">الكمية:</span>
                 <div className="flex items-center border border-gray-300 rounded-lg">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -172,7 +161,7 @@ export default function ProductDetailPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" onClick={handleAddToCart} className="flex-1">
                   <ShoppingBag className="h-5 w-5 mr-2" />
-                  Add to Cart - ${(discountedPrice * quantity).toFixed(2)}
+                  إضافة إلى السلة - ${(finalPrice * quantity).toFixed(2)}
                 </Button>
                 <Button variant="secondary" size="lg">
                   <Heart className="h-5 w-5" />
@@ -186,24 +175,24 @@ export default function ProductDetailPage() {
                 <div className="flex items-center space-x-3">
                   <Truck className="h-5 w-5 text-rose-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Free Shipping</div>
-                    <div className="text-sm text-gray-600">Orders over $50</div>
+                    <div className="font-medium text-gray-900">شحن مجاني</div>
+                    <div className="text-sm text-gray-600">للطلبات أكثر من 50$</div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-3">
                   <RotateCcw className="h-5 w-5 text-rose-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Easy Returns</div>
-                    <div className="text-sm text-gray-600">30-day policy</div>
+                    <div className="font-medium text-gray-900">إرجاع سهل</div>
+                    <div className="text-sm text-gray-600">سياسة 30 يوم</div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-3">
                   <Shield className="h-5 w-5 text-rose-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Authentic</div>
-                    <div className="text-sm text-gray-600">100% genuine</div>
+                    <div className="font-medium text-gray-900">منتج أصلي</div>
+                    <div className="text-sm text-gray-600">أصلي 100%</div>
                   </div>
                 </div>
               </div>
@@ -212,7 +201,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Related Products */}
-        {relatedProducts.length > 0 && (
+        {/* {relatedProducts.length > 0 && (
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -221,7 +210,7 @@ export default function ProductDetailPage() {
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

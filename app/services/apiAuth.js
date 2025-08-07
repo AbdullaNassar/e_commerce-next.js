@@ -1,9 +1,7 @@
 import api from "./axiosInstance";
 export const login = async (data) => {
-  console.log(data);
   try {
     const response = await api.post("/login", data);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);
