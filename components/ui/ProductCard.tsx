@@ -7,6 +7,9 @@ import { Heart, Star, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from './button';
 import { Product } from '@/lib/types';
+import { useUser } from '@/contexts/UserContext';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: Product;
@@ -15,9 +18,24 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { dispatch } = useCart();
 
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // dispatch({ type: 'ADD_TO_CART', payload: product });
+
+  const { user } = useUser()
+  const router = useRouter()
+
+  const handleAddToCart = () => {
+    if (!user) {
+      toast.error('يجب تسجيل الدخول أولاً', {
+        description: 'الرجاء تسجيل الدخول لإضافة المنتجات إلى السلة',
+        action: {
+          label: 'تسجيل الدخول',
+          onClick: () => router.push('/login')
+        }
+      });
+      return;
+    }
+    // TODO: Add to cart logic here
+    //  dispatch({ type: 'ADD_TO_CART', payload: product });
+
   };
 
 

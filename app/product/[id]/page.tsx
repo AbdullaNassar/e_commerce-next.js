@@ -10,6 +10,8 @@ import { useCart } from '@/contexts/CartContext';
 import { Product } from '@/lib/types';
 import { useQuery } from '@tanstack/react-query';
 import { getProductById } from '@/app/services/api-products';
+import { useUser } from '@/contexts/UserContext';
+import { toast } from 'sonner';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -53,11 +55,21 @@ export default function ProductDetailPage() {
   const discount = priceBeforeDiscount > finalPrice
     ? Math.round((1 - finalPrice / priceBeforeDiscount) * 100)
     : 0;
-
+  const { user } = useUser()
   const handleAddToCart = () => {
-    // for (let i = 0; i < quantity; i++) {
-    //   dispatch({ type: 'ADD_TO_CART', payload: product });
-    // }
+    if (!user) {
+      toast.error('يجب تسجيل الدخول أولاً', {
+        description: 'الرجاء تسجيل الدخول لإضافة المنتجات إلى السلة',
+        action: {
+          label: 'تسجيل الدخول',
+          onClick: () => router.push('/login')
+        }
+      });
+      return;
+    }
+    // TODO: Add to cart logic here
+    //  dispatch({ type: 'ADD_TO_CART', payload: product });
+
   };
 
   const productImages = product.images;
@@ -132,7 +144,6 @@ export default function ProductDetailPage() {
 
             <div className="border-t border-gray-200 pt-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">الوصف</h3>
-              {/* <p className="text-gray-700 leading-relaxed">{product.description}</p> */}
             </div>
 
 
@@ -199,18 +210,6 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
-
-        {/* Related Products */}
-        {/* {relatedProducts.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Related Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        )} */}
       </div>
     </div>
   );
