@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Minus, Plus, X, ShoppingBag, ArrowRight } from "lucide-react";
@@ -11,7 +11,29 @@ import { set } from "date-fns";
 import { useMyCart } from "./useMyCart";
 import { useRemoveFromCart } from "./useRemoveFromCart";
 import { useUpdateQuantity } from "./useUpdateQuantity";
+import { usePaymentOrder } from "./usePayment";
 export default function CartPage() {
+  const [showModal, setShowModal] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [errors, setErrors] = useState({ phone: "", address: "", name: "" });
+
+  const validate = () => {
+    const newErrors: { phone?: string; address?: string; name?: string } = {};
+    if (!phone.match(/^01[0-2,5]{1}[0-9]{8}$/)) {
+      newErrors.phone = "رقم الهاتف غير صالح";
+    }
+    if (address.trim().length < 5) {
+      newErrors.address = "العنوان يجب أن يكون على الأقل 5 أحرف";
+    }
+    if (name.trim().length < 3) {
+      newErrors.name = "العنوان يجب أن يكون على الأقل 3 أحرف";
+    }
+    setErrors(newErrors as any);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const { state, dispatch } = useCart();
   const { user } = useUser();
   const router = require("next/navigation").useRouter();
@@ -19,9 +41,19 @@ export default function CartPage() {
   const { data: cart, isLoading: loadingCart, error: errorCart } = useMyCart();
   const { mutate: removeProduct, isPending } = useRemoveFromCart();
   const { mutate: mutateLupdateQuantity } = useUpdateQuantity();
+  const { mutate, isPending: pendingPayment } = usePaymentOrder();
 
   const removeItem = (id: string) => {
     dispatch({ type: "REMOVE_FROM_CART", payload: id });
+  };
+
+  const handleBookClick = () => setShowModal(true);
+
+  const handleConfirm = () => {
+    if (!validate()) return;
+
+    mutate({ phone, address, name });
+    setShowModal(false);
   };
 
   console.log("cart", cart);
@@ -238,9 +270,19 @@ export default function CartPage() {
               </span>
             </div>
 
-            <Button size="lg" className="w-full" asChild>
+            <Button
+              onClick={handleBookClick}
+              disabled={pendingPayment}
+              size="lg"
+              className="w-full"
+              asChild
+            >
               <Link href="/checkout">
-                إتمام الشراء <ArrowRight className="ml-2 h-4 w-4" />
+                {!pendingPayment && (
+                  <span>
+                    إتمام الشراء <ArrowRight className="ml-2 h-4 w-4" />
+                  </span>
+                )}
               </Link>
             </Button>
 
@@ -252,6 +294,67 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md space-y-4 text-right">
+            <h2 className="text-xl font-bold text-gray-700">أدخل بياناتك</h2>
+
+            <div>
+              <label className="block text-sm text-gray-600">الاسم</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full border rounded p-2"
+                placeholder="ادخل اسمك "
+              />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600">رقم الهاتف</label>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full border rounded p-2"
+                placeholder="01XXXXXXXXX"
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-sm">{errors.phone}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm text-gray-600">العنوان</label>
+              <input
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full border rounded p-2"
+                placeholder="مثال: شارع التحرير، الجيزة"
+              />
+              {errors.address && (
+                <p className="text-red-500 text-sm">{errors.address}</p>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={handleConfirm}
+                className="bg-pink-600 text-white px-4 py-2 rounded hover:bg-pink-700"
+              >
+                تأكيد
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

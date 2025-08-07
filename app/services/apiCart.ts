@@ -45,3 +45,19 @@ export const updateProductQuantity = async ({
     throw error;
   }
 };
+
+export const PaymentOrder = async ({ phone, address, name }) => {
+  try {
+    const res = await api.post("/pay", {
+      phone,
+      shippingAddress: address,
+      customerName: name,
+    });
+    return res.data;
+  } catch (err) {
+    console.error(err);
+    const message =
+      error?.response?.data?.message || error?.response?.data?.error?.message;
+    throw new Error(message || "حدث خطأ أثناء معالجة الدفع");
+  }
+};

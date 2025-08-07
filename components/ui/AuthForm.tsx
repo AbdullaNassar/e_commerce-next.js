@@ -29,9 +29,6 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
     } else if (type === "login" && onSubmit) {
       const { email, password } = formData;
       onSubmit({ email, password });
-    } else {
-      // Fallback
-      console.log("Form submitted:", formData);
     }
   };
 
@@ -43,7 +40,10 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
   };
 
   return (
-    <div className="min-h-screen bg-rose-gradient flex items-center justify-center px-4">
+    <div
+      dir="rtl"
+      className="min-h-screen bg-rose-gradient flex items-center justify-center px-4"
+    >
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {error && (
@@ -65,47 +65,47 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
           <form onSubmit={handleSubmit} className="space-y-6">
             {type === "register" && (
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <User className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
                   type="text"
                   name="userName"
                   placeholder="الاسم الكامل"
                   value={formData.userName}
                   onChange={handleChange}
-                  className="pl-10"
+                  className="pr-10"
                   required
                 />
               </div>
             )}
 
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
                 type="email"
                 name="email"
                 placeholder="البريد الإلكتروني"
                 value={formData.email}
                 onChange={handleChange}
-                className="pl-10"
+                className="pr-10"
                 required
               />
             </div>
 
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="كلمة المرور"
                 value={formData.password}
                 onChange={handleChange}
-                className="pl-10 pr-10"
+                className="pr-10 pl-10"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -117,14 +117,14 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
 
             {type === "register" && (
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
                   type={showPassword ? "text" : "password"}
                   name="password_confirmation"
                   placeholder="تأكيد كلمة المرور"
                   value={formData.password_confirmation}
                   onChange={handleChange}
-                  className="pl-10"
+                  className="pr-10"
                   required
                 />
               </div>
@@ -137,7 +137,7 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
                     type="checkbox"
                     className="text-rose-600 focus:ring-rose-500 border-gray-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-600">تذكرني</span>
+                  <span className="mr-2 text-sm text-gray-600">تذكرني</span>
                 </label>
                 <Link
                   href="/forgetPass"
@@ -167,7 +167,7 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
               {type === "login" ? "ليس لديك حساب؟" : "لديك حساب بالفعل؟"}
               <Link
                 href={type === "login" ? "/register" : "/login"}
-                className="ml-1 font-medium text-rose-600 hover:text-rose-700"
+                className="mr-1 font-medium text-rose-600 hover:text-rose-700"
               >
                 {type === "login" ? "إنشاء حساب" : "تسجيل الدخول"}
               </Link>
@@ -188,6 +188,7 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
 
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                {/* Google icon */}
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
                     fill="currentColor"
@@ -209,6 +210,7 @@ export function AuthForm({ type, onSubmit, isLoading, error }: AuthFormProps) {
               </button>
 
               <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                {/* Twitter icon */}
                 <svg
                   className="h-5 w-5"
                   fill="currentColor"

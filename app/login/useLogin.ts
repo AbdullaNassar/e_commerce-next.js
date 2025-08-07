@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { login } from "../services/apiAuth";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
 export function useLogin() {
   const queryClient = useQueryClient();
   const router = useRouter();
